@@ -26,6 +26,9 @@ using Tools.DotNETCommon;
 #endif
 using UnrealBuildTool;
 
+
+
+
 public class Lua : ModuleRules
 {
     public Lua(ReadOnlyTargetRules Target) : base(Target)
@@ -84,32 +87,32 @@ public class Lua : ModuleRules
 
     private void BuildForAndroid()
     {
-        var NDKRoot = Environment.GetEnvironmentVariable("NDKROOT");
-        if (NDKRoot == null)
-            throw new BuildException("can't find NDKROOT");
+        //var NDKRoot = Environment.GetEnvironmentVariable("NDKROOT");
+        //if (NDKRoot == null)
+        //    throw new BuildException("can't find NDKROOT");
 
-        var toolchain = AndroidExports.CreateToolChain(Target.ProjectFile);
-        var NdkApiLevel = toolchain.GetNdkApiLevelInt(21);
+        //var toolchain = UnrealBuildTool.AndroidExports
+        //var NdkApiLevel = toolchain.GetNdkApiLevelInt(21);
 
-        var abiNames = new[] { "armeabi-v7a", "arm64-v8a", "x86_64" };
-        foreach (var abiName in abiNames)
-        {
-            var libFile = GetLibraryPath(abiName);
-            PublicAdditionalLibraries.Add(libFile);
-            if (File.Exists(libFile))
-                continue;
+        //var abiNames = new[] { "armeabi-v7a", "arm64-v8a", "x86_64" };
+        //foreach (var abiName in abiNames)
+        //{
+        //    var libFile = GetLibraryPath(abiName);
+        //    PublicAdditionalLibraries.Add(libFile);
+        //    if (File.Exists(libFile))
+        //        continue;
 
-            EnsureDirectoryExists(libFile);
-            var args = new Dictionary<string, string>
-            {
-                { "CMAKE_TOOLCHAIN_FILE", Path.Combine(NDKRoot, "build/cmake/android.toolchain.cmake") },
-                { "ANDROID_ABI", abiName },
-                { "ANDROID_PLATFORM", "android-" + NdkApiLevel }
-            };
-            var buildDir = CMake(args);
-            var buildFile = Path.Combine(buildDir, m_LibName);
-            File.Copy(buildFile, libFile, true);
-        }
+        //    EnsureDirectoryExists(libFile);
+        //    var args = new Dictionary<string, string>
+        //    {
+        //        { "CMAKE_TOOLCHAIN_FILE", Path.Combine(NDKRoot, "build/cmake/android.toolchain.cmake") },
+        //        { "ANDROID_ABI", abiName },
+        //        { "ANDROID_PLATFORM", "android-" + NdkApiLevel }
+        //    };
+        //    var buildDir = CMake(args);
+        //    var buildFile = Path.Combine(buildDir, m_LibName);
+        //    File.Copy(buildFile, libFile, true);
+        //}
     }
 
     private void BuildForLinux()
@@ -174,14 +177,14 @@ public class Lua : ModuleRules
 
     private void BuildForMac()
     {
-        var abiName = Target.Architecture;
+        var abiName = Target.Architecture.ToString();
         var libFile = GetLibraryPath(abiName);
         if (!File.Exists(libFile))
         {
             EnsureDirectoryExists(libFile);
             var args = new Dictionary<string, string>
             {
-                { "CMAKE_OSX_ARCHITECTURES", Target.Architecture }
+                { "CMAKE_OSX_ARCHITECTURES", Target.Architecture.ToString() }
             };
             var buildDir = CMake(args);
             var buildFile = Path.Combine(buildDir, m_LibName);
